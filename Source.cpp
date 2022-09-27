@@ -5,7 +5,7 @@
 
 using namespace std;
 
-enum Months { JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC };
+enum Months { JAN = 1, FEB = 2, MAR = 3, APR = 4, MAY = 5, JUN = 6, JUL = 7, AUG = 8, SEP = 9, OCT = 10, NOV = 11, DEC = 12 };
 
 struct Semen {
     char* name;
@@ -46,31 +46,27 @@ int main() {
 
 void get_siemens(vector<Semen*>& siemens, int number_of_siemens) {
     for (int n = 0; n < number_of_siemens; n++) {
-        char name[20];
-        int month_sowing;
-        int month_seating;
-        int month_harvesting;
+        Semen* siemen = new Semen;
+        siemen->name = new char[20];
 
         cout << "{\n\tЌазвание культуры: ";
-        cin >> name;
+        scanf_s("%s", siemen->name, 20);
         cout << "\tћес€ц посева: ";
-        cin >> month_sowing;
+        scanf_s("%d", &(siemen->month_sowing));
         cout << "\tћес€ц выссадки рассады: ";
-        cin >> month_seating;
+        scanf_s("%d", &(siemen->month_seating));
         cout << "\tћес€ц уборки: ";
-        cin >> month_harvesting;
+        scanf_s("%d", &(siemen->month_harvesting));
         cout << "}" << endl;
 
-        siemens.push_back(new Semen{
-                name, --month_sowing, --month_seating, --month_harvesting
-            });
+        siemens.push_back(siemen);
     }
 }
 
 void filter_harvesting(vector<Semen*>& output_vector, vector<Semen*>& input_vector, int month_number) {
     for (int i = 0; i < input_vector.size(); i++) {
         if (input_vector[i]->month_harvesting != month_number) continue;
-        int insert_index = find_greater_name_index(input_vector, input_vector[i]->name);
+        int insert_index = find_greater_name_index(output_vector, input_vector[i]->name);
         output_vector.insert(output_vector.begin() + insert_index, input_vector[i]);
     }
 }
@@ -78,14 +74,17 @@ void filter_harvesting(vector<Semen*>& output_vector, vector<Semen*>& input_vect
 int find_greater_name_index(vector<Semen*> siemens, char* name) {
     if (!siemens.size()) return 0;
     if (siemens.size() == 1) {
-        return 1 + strcmp(name, siemens[0]->name);
+        return strcmp(name, siemens[0]->name) > 0;
     }
     int start = 0;
     int end = siemens.size() - 1;
     int cur_index = abs((start + end) / 2);
     while (end > start) {
         if (strcmp(name, siemens[cur_index]->name) > 0) {
-            start = cur_index + 1;
+            if (cur_index < siemens.size() - 1 && strcmp(name, siemens[cur_index + 1]->name) < 0) {
+                return ++cur_index;
+            }
+            start = cur_index + 2;
         }
         else {
             end = cur_index;
