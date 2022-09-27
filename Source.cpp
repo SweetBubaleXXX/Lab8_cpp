@@ -1,3 +1,4 @@
+// cp1251
 #include <iostream>
 #include <vector>
 
@@ -18,7 +19,7 @@ void get_siemens(vector<Semen*>&, int);
 
 void filter_harvesting(vector<Semen*>&, vector<Semen*>&, int);
 
-int find_greater_name_index(vector<Semen*>, char*);
+int find_greater_name_index(vector<Semen*>&, char*);
 
 int main() {
     a_po_russki_mozhno;
@@ -27,18 +28,25 @@ int main() {
     vector<Semen*> siemens;
     int number_of_siemens;
 
-    cout << "Введите количество семян: ";
+    cout << "Введите количество культур: ";
     cin >> number_of_siemens;
     if (cin.fail() || number_of_siemens <= 0) { puts("Неверное число"); return -1; }
 
     get_siemens(siemens, number_of_siemens);
     filter_harvesting(output_siemens, siemens, AUG);
 
+    if (!output_siemens.size()) {
+        cout << "\nКультуры не найдены(" << endl;
+        return 1;
+    }
+
+    cout << "\nКультуры, высаженные в августе:" << endl;
     for (int i = 0; i < output_siemens.size(); i++) {
-        cout << "{\n\tНазвание: " << output_siemens[i]->name << endl;
-        cout << "\tМесяц посева: " << output_siemens[i]->month_sowing << endl;
+        cout << "{\n\tНазвание культуры: " << output_siemens[i]->name << endl;
+        /*cout << "\tМесяц посева: " << output_siemens[i]->month_sowing << endl;
         cout << "\tМесяц выссадки рассады: " << output_siemens[i]->month_seating << endl;
-        cout << "\tМесяц уборки: " << output_siemens[i]->month_harvesting << "\n}" << endl;
+        cout << "\tМесяц уборки: " << output_siemens[i]->month_harvesting << endl;*/
+        cout << "}" << endl;
     }
 
     return 0;
@@ -47,7 +55,7 @@ int main() {
 void get_siemens(vector<Semen*>& siemens, int number_of_siemens) {
     for (int n = 0; n < number_of_siemens; n++) {
         Semen* siemen = new Semen;
-        siemen->name = new char[20];
+        siemen->name = new char[30];
 
         cout << "{\n\tНазвание культуры: ";
         scanf_s("%s", siemen->name, 20);
@@ -71,25 +79,20 @@ void filter_harvesting(vector<Semen*>& output_vector, vector<Semen*>& input_vect
     }
 }
 
-int find_greater_name_index(vector<Semen*> siemens, char* name) {
+int find_greater_name_index(vector<Semen*>& siemens, char* name) {
     if (!siemens.size()) return 0;
-    if (siemens.size() == 1) {
-        return strcmp(name, siemens[0]->name) > 0;
-    }
+    if (siemens.size() == 1) return strcmp(name, siemens[0]->name) > 0;
     int start = 0;
-    int end = siemens.size() - 1;
+    int end = siemens.size();
     int cur_index = abs((start + end) / 2);
     while (end > start) {
+        cur_index = abs((start + end) / 2);
         if (strcmp(name, siemens[cur_index]->name) > 0) {
-            if (cur_index < siemens.size() - 1 && strcmp(name, siemens[cur_index + 1]->name) < 0) {
-                return ++cur_index;
-            }
-            start = cur_index + 2;
+            start = cur_index + 1;
         }
         else {
             end = cur_index;
         }
-        cur_index = abs((start + end) / 2);
     }
-    return cur_index;
+    return end;
 }
