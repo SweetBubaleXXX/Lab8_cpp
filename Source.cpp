@@ -13,6 +13,15 @@ struct Semen {
     int month_sowing;
     int month_seating;
     int month_harvesting;
+
+    Semen() {
+        name = new char[30];
+        month_sowing = month_seating = month_harvesting = 1;
+    }
+
+    ~Semen() {
+        delete name;
+    }
 };
 
 void get_siemens(vector<Semen*>&, int);
@@ -21,11 +30,13 @@ void filter_harvesting(vector<Semen*>&, vector<Semen*>&, int);
 
 int find_greater_name_index(vector<Semen*>&, char*);
 
+inline void free_vector_of_semens(vector<Semen*>&);
+
 int main() {
     a_po_russki_mozhno;
 
-    vector<Semen*> output_siemens;
     vector<Semen*> siemens;
+    vector<Semen*> output_siemens;
     int number_of_siemens;
 
     cout << "Введите количество культур: ";
@@ -37,6 +48,8 @@ int main() {
 
     if (!output_siemens.size()) {
         cout << "\nКультуры не найдены(" << endl;
+        free_vector_of_semens(siemens);
+        output_siemens.clear();
         return 1;
     }
 
@@ -49,13 +62,15 @@ int main() {
         cout << "}" << endl;
     }
 
+    free_vector_of_semens(siemens);
+    output_siemens.clear();
+
     return 0;
 }
 
 void get_siemens(vector<Semen*>& siemens, int number_of_siemens) {
     for (int n = 0; n < number_of_siemens; n++) {
         Semen* siemen = new Semen;
-        siemen->name = new char[30];
 
         cout << "{\n\tНазвание культуры: ";
         scanf_s("%s", siemen->name, 20);
@@ -95,4 +110,11 @@ int find_greater_name_index(vector<Semen*>& siemens, char* name) {
         }
     }
     return end;
+}
+
+inline void free_vector_of_semens(vector<Semen*>& siemens) {
+    for (int i = 0; i < siemens.size(); i++) {
+        delete siemens[i];
+    }
+    siemens.clear();
 }
